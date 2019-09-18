@@ -1,8 +1,28 @@
 import numpy as np
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
 
 
-def OLS_1d(x, y):
+def choose_regression_algorithm(alpha, regularization):
+    """
+    find the right method 
+    """
+    if alpha==0.:
+        lin_reg = LinearRegression()
+    else:
+        if regularization=='Ridge':
+            lin_reg = Ridge(alpha)
+        elif regularization=='Lasso':
+            lin_reg = Lasso(alpha)
+        else:
+            print("regularization type '%s' not understood" % regularization)
+            lin_reg = None
+
+    return lin_reg
+    
+
+def OLS_1d(x, y,
+           alpha=0.,
+           regularization='Ridge'):
     """
     single variable linear regression using ordinary least square minimization
     f(x) = a*x+b
@@ -14,7 +34,8 @@ def OLS_1d(x, y):
     returns: dictionary with the prediction function and coefficients
     {'predict_func':predict_func, 'a':lin_reg.coef_[0], 'b':lin_reg.intercept_[0]}
     """
-    lin_reg = LinearRegression()
+
+    lin_reg = choose_regression_algorithm(alpha, regularization)
     lin_reg.fit(x.reshape(len(x),1), y.reshape(len(x),1))
 
     def predict_func(x):
@@ -23,7 +44,9 @@ def OLS_1d(x, y):
     return {'predict_func':predict_func, 'a':lin_reg.coef_[0], 'b':lin_reg.intercept_[0]}
 
 
-def OLS_Md(X, Y):
+def OLS_Md(X, Y,
+           alpha=0.,
+           regularization='Ridge'):
     """
     multidimensional linear regression using ordinary least square minimization
     f(X) = A*X+B
@@ -41,7 +64,7 @@ def OLS_Md(X, Y):
         y -> 1d array of shape (Nsamples,)
         """)
 
-    lin_reg = LinearRegression()
+    lin_reg = choose_regression_algorithm(alpha, regularization)
     lin_reg.fit(X, Y)
 
     return {'predict_func':lin_reg.predict, 'A':lin_reg.coef_, 'B':lin_reg.intercept_}
@@ -85,6 +108,19 @@ if __name__=='__main__':
         # --- plot
         fig = ols_1D_viz(mg, x, y, OLS_1d(x, y))
         mg.annotate(fig, '1.23*x-0.24', (.6,.2), color=mg.blue)
+        mg.show()
+    elif sys.argv[-1]=='1D-RGL':
+        # generating random data
+        x = np.linspace(0,2, 100)
+        y = np.random.randn(len(x))+2.*np.sin(2*np.pi*x)
+        # --- plot
+        fig, AX = mg.figure(axes=(1,2), top=3.)
+        for ax, method in zip(AX, ['Ridge', 'Lasso']):
+            ax.plot(x, y, 'o', ms=3, label='data', color=mg.blue)
+            for d, alpha in enumerate([0.,0.5,.9]):
+                mg.plot(x, OLS_1d(x, y, 3, alpha=alpha, regularization=method)['predict_func'](x), ax=ax,
+                        color=mg.viridis(d/2.), lw=2, label='$\\alpha$=%.1f'%alpha)
+            ax.legend(prop={'size':'xx-small'})
         mg.show()
     elif sys.argv[-1]=='MD':
         # generating random data

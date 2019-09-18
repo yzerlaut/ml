@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from sklearn.pipeline import Pipeline
-
+from linear import choose_regression_algorithm
 
 def build_pipeline_for_polynomial_regression(degree,
                                              alpha=0.,
@@ -14,16 +14,7 @@ def build_pipeline_for_polynomial_regression(degree,
     poly_features = PolynomialFeatures(degree=degree, include_bias=False)
     
     std_scaler = StandardScaler()
-    if alpha==0.:
-        lin_reg = LinearRegression()
-    else:
-        if regularization=='Ridge':
-            lin_reg = Ridge(alpha)
-        elif regularization=='Lasso':
-            lin_reg = Lasso(alpha)
-        else:
-            print("regularization type '%s' not understood" % regularization)
-
+    lin_reg = choose_regression_algorithm(alpha, regularization)
     
     polynomial_regression = Pipeline([
         ("poly_features", poly_features),
@@ -128,6 +119,19 @@ if __name__=='__main__':
             mg.plot(x, OLS_1d(x, y, d)['predict_func'](x), ax=ax,
                     color=mg.viridis((d-1)/3.), lw=2, label='deg=%i'%d)
         ax.legend(prop={'size':'xx-small'})
+        mg.show()
+    elif sys.argv[-1]=='1D-RGL':
+        # generating random data
+        x = np.linspace(0,2, 100)
+        y = np.random.randn(len(x))+2.*np.sin(2*np.pi*x)
+        # --- plot
+        fig, AX = mg.figure(axes=(1,2), top=3.)
+        for ax, method in zip(AX, ['Ridge', 'Lasso']):
+            ax.plot(x, y, 'o', ms=3, label='data', color=mg.blue)
+            for d, alpha in enumerate([0.,0.5,.9]):
+                mg.plot(x, OLS_1d(x, y, 3, alpha=alpha, regularization=method)['predict_func'](x), ax=ax,
+                        color=mg.viridis(d/2.), lw=2, label='$\\alpha$=%.1f'%alpha)
+            ax.legend(prop={'size':'xx-small'})
         mg.show()
     elif sys.argv[-1]=='MD':
         # generating random data
