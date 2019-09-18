@@ -1,9 +1,8 @@
 import numpy as np
-import sklearn
 from sklearn.linear_model import LinearRegression
 
 
-def ordinary_least_square_1d(x, y):
+def OLS_1d(x, y):
     """
     single variable linear regression using ordinary least square minimization
     f(x) = a*x+b
@@ -24,7 +23,7 @@ def ordinary_least_square_1d(x, y):
     return {'predict_func':predict_func, 'a':lin_reg.coef_[0], 'b':lin_reg.intercept_[0]}
 
 
-def ordinary_least_square_Md(X, Y):
+def OLS_Md(X, Y):
     """
     multidimensional linear regression using ordinary least square minimization
     f(X) = A*X+B
@@ -84,7 +83,7 @@ if __name__=='__main__':
         x = np.linspace(0,1, 100)
         y = np.random.randn(len(x))+1.23*x-0.24
         # --- plot
-        fig = ols_1D_viz(mg, x, y, ordinary_least_square_1d(x, y))
+        fig = ols_1D_viz(mg, x, y, OLS_1d(x, y))
         mg.annotate(fig, '1.23*x-0.24', (.6,.2), color=mg.blue)
         mg.show()
     elif sys.argv[-1]=='MD':
@@ -93,12 +92,12 @@ if __name__=='__main__':
         # uncorrelated variables:
         X = np.random.randn(nsamples,3)
         y = np.random.randn(nsamples)-0.4*X.T[0]-0.5*X.T[1]+3.*X.T[2]-12.
-        fig = ols_MD_viz(mg, X, y, ordinary_least_square_Md(X, y))
+        fig = ols_MD_viz(mg, X, y, OLS_Md(X, y))
         mg.annotate(fig, '-0.4*x1-0.5*x2+3.x3', (.55,.18), color=mg.blue, ha='center')
         # correlated variables:
         X = np.array([np.linspace(0,1,nsamples), np.linspace(-4,3,nsamples), np.linspace(-4,3,nsamples)]).T
         y = np.random.randn(nsamples)-0.4*X.T[0]-0.5*X.T[1]+3.*X.T[2]-12.
-        fig = ols_MD_viz(mg, X, y, ordinary_least_square_Md(X, y))
+        fig = ols_MD_viz(mg, X, y, OLS_Md(X, y))
         # --- plot
         mg.annotate(fig, '-0.4*x1-0.5*x2+3.x3', (.55,.18), color=mg.blue, ha='center')
         mg.show()
