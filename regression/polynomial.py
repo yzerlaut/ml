@@ -160,6 +160,7 @@ if __name__=='__main__':
         ------------------------------------------
         Please choose one of the available method:
         '1D' : one dimensional regression
+        '1D-REG' : one dimensional regression with regularization
         'MD' : multidimensional linear regression
         ------------------------------------------
         and pass it as an argument to the script

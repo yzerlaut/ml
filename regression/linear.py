@@ -114,12 +114,13 @@ if __name__=='__main__':
         x = np.linspace(0,2, 100)
         y = np.random.randn(len(x))+2.*np.sin(2*np.pi*x)
         # --- plot
-        fig, AX = mg.figure(axes=(1,2), top=3.)
+        fig, AX = mg.figure(axes=(1,2), top=5.)
         for ax, method in zip(AX, ['Ridge', 'Lasso']):
             ax.plot(x, y, 'o', ms=3, label='data', color=mg.blue)
-            for d, alpha in enumerate([0.,0.5,.9]):
-                mg.plot(x, OLS_1d(x, y, 3, alpha=alpha, regularization=method)['predict_func'](x), ax=ax,
+            for d, alpha in enumerate([0., 0.2, 20.]):
+                mg.plot(x, OLS_1d(x, y, alpha=alpha, regularization=method)['predict_func'](x), ax=ax,
                         color=mg.viridis(d/2.), lw=2, label='$\\alpha$=%.1f'%alpha)
+                ax.set_title(method)
             ax.legend(prop={'size':'xx-small'})
         mg.show()
     elif sys.argv[-1]=='MD':
@@ -142,6 +143,7 @@ if __name__=='__main__':
         ------------------------------------------
         Please choose one of the available method:
         '1D' : one dimensional regression
+        '1D-REG' : one dimensional regression with regularization
         'MD' : multidimensional linear regression
         ------------------------------------------
         and pass it as an argument to the script
