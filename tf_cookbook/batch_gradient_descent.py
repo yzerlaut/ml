@@ -35,7 +35,6 @@ training_op = optimizer.minimize(mse)
 init = tf.global_variables_initializer()
 
 def fetch_batch(epoch, batch_index, batch_size):
-    # np.random.seed(epoch * n_batches + batch_index) 
     indices = np.random.randint(m, size=batch_size) 
     X_batch = scaled_housing_data_plus_bias[indices]
     y_batch = housing.target.reshape(-1, 1)[indices]
@@ -43,8 +42,7 @@ def fetch_batch(epoch, batch_index, batch_size):
 
 # setting up the tensorboard
 now = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-root_logdir = "tf_logs"
-logdir = "{}/run-{}/".format(root_logdir, now)
+logdir = "logs/run-{}/".format(now)
 
 mse_summary = tf.summary.scalar('MSE', mse)
 file_writer = tf.summary.FileWriter(logdir, tf.get_default_graph())
